@@ -1,34 +1,20 @@
-# Terraform
+# Terraform files
 .terraform/
 *.tfstate
 *.tfstate.*
 crash.log
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
+crash.*.log
 
-# AWS Keys
-*.pem
-*.key
-
-# AWS Credentials
-.aws/
+# Terraform variables
+*.tfvars
+*.tfvars.json
 
 # Docker
-docker-compose.override.yml
-
-# Jenkins
-jenkins_home/
 *.log
 
-# Operating System
+# OS files
 .DS_Store
 Thumbs.db
 
-# IDE
-.vscode/
-.idea/
-
-# Node modules (if used)
-node_modules/
+# Environment files
+.env

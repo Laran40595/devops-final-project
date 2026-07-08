@@ -1,0 +1,4 @@
+Docker Containers
+CONTAINER ID   IMAGE                             COMMAND                  CREATED       STATUS       PORTS                                                                                          NAMES
+7860d62028c7   greatmike1/portfolio-app:latest   "/docker-entrypoint.…"   3 hours ago   Up 3 hours   0.0.0.0:3000->80/tcp, [::]:3000->80/tcp                                                        portfolio-app-container
+57e71cef1dea   jenkins-docker                    "/usr/bin/tini -- /u…"   5 hours ago   Up 5 hours   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp, 0.0.0.0:50000->50000/tcp, [::]:50000->50000/tcp   jenkins
