@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = "greatmike1/portfolio-app"
+    }
+
     stages {
 
         stage('Checkout Code') {
@@ -12,8 +16,28 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('portfolio') {
-                    sh 'docker build -t portfolio-app .'
+                    sh 'docker build -t $DOCKER_IMAGE:$BUILD_NUMBER .'
                 }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    sh '''
+                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh 'docker push $DOCKER_IMAGE:$BUILD_NUMBER'
             }
         }
 
@@ -23,9 +47,14 @@ pipeline {
             }
         }
 
-        stage('Run Application') {
+        stage('Deploy Application') {
             steps {
-                sh 'docker run -d -p 3000:80 --name portfolio-app-container portfolio-app'
+                sh '''
+                docker run -d \
+                -p 3000:80 \
+                --name portfolio-app-container \
+                $DOCKER_IMAGE:$BUILD_NUMBER
+                '''
             }
         }
 
