@@ -1,4 +1,5 @@
 pipeline {
+
     agent any
 
     environment {
@@ -13,50 +14,59 @@ pipeline {
             }
         }
 
+
         stage('Build Docker Image') {
             steps {
                 dir('portfolio') {
-                    sh 'docker build -t $DOCKER_IMAGE:$BUILD_NUMBER .'
-                }
-            }
-        }
-
-        stage('Login to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-credentials',
-                    usernameVariable: 'DOCKER_USERNAME',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
                     sh '''
-                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                    docker build -t $DOCKER_IMAGE:$BUILD_NUMBER .
+                    docker tag $DOCKER_IMAGE:$BUILD_NUMBER $DOCKER_IMAGE:latest
                     '''
                 }
             }
         }
 
+
+        stage('Login Docker Hub') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                    echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                    '''
+                }
+            }
+        }
+
+
         stage('Push Docker Image') {
             steps {
-                sh 'docker push $DOCKER_IMAGE:$BUILD_NUMBER'
-            }
-        }
-
-        stage('Stop Existing Container') {
-            steps {
-                sh 'docker rm -f portfolio-app-container || true'
-            }
-        }
-
-        stage('Deploy Application') {
-            steps {
                 sh '''
-                docker run -d \
-                -p 3000:80 \
-                --name portfolio-app-container \
-                $DOCKER_IMAGE:$BUILD_NUMBER
+                docker push $DOCKER_IMAGE:$BUILD_NUMBER
+                docker push $DOCKER_IMAGE:latest
                 '''
             }
         }
+
+
+        stage('Deploy Container') {
+            steps {
+                sh '''
+                docker rm -f portfolio-app-container || true
+
+                docker run -d \
+                -p 3000:80 \
+                --name portfolio-app-container \
+                $DOCKER_IMAGE:latest
+                '''
+            }
+        }
+
 
         stage('Verify Deployment') {
             steps {
@@ -65,13 +75,14 @@ pipeline {
         }
     }
 
+
     post {
         success {
-            echo 'Portfolio deployment completed successfully!'
+            echo 'Portfolio deployment and Docker Hub push successful!'
         }
 
         failure {
-            echo 'Pipeline failed. Check logs.'
+            echo 'Pipeline failed'
         }
     }
 }
