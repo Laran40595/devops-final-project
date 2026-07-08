@@ -8,13 +8,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
-            steps {
-                checkout scm
-            }
-        }
-
-
         stage('Build Docker Image') {
             steps {
                 dir('portfolio') {
@@ -70,13 +63,17 @@ pipeline {
 
         stage('Verify Deployment') {
             steps {
-                sh 'docker ps'
+                sh '''
+                docker ps
+                '''
             }
         }
+
     }
 
 
     post {
+
         success {
             echo 'Portfolio deployment and Docker Hub push successful!'
         }
@@ -84,5 +81,7 @@ pipeline {
         failure {
             echo 'Pipeline failed'
         }
+
     }
+
 }
