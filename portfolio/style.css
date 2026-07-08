@@ -1,7 +1,11 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.profile-pic {
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #38bdf8;
+    display: block;
+    margin: 0 auto 25px auto;
 }
 
 body {
@@ -138,4 +142,12 @@ footer {
     text-align: center;
     padding: 20px;
     margin-top: 50px;
+}
+
+.profile-image {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
 }
