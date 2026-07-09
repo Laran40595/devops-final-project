@@ -18,3 +18,13 @@ Thumbs.db
 
 # Environment files
 .env
+
+# Maven build files
+java-app/target/
+
+# Java compiled files
+*.class
+
+# IDE files
+.vscode/
+.idea/
