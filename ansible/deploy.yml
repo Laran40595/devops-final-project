@@ -1,0 +1,25 @@
+---
+- name: Deploy Portfolio Website
+  hosts: web
+  become: yes
+
+  tasks:
+
+    - name: Pull latest Docker image
+      docker_image:
+        name: greatmike1/portfolio-app
+        source: pull
+
+    - name: Stop old container
+      docker_container:
+        name: portfolio-app
+        state: absent
+
+    - name: Start portfolio container
+      docker_container:
+        name: portfolio-app
+        image: greatmike1/portfolio-app:latest
+        state: started
+        restart_policy: always
+        published_ports:
+          - "80:80"
